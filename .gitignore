@@ -1,1 +1,26 @@
+# --- Python ignores ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+*.pot
+
+# --- Virtual environment folders ---
+env/
+venv/
+ENV/
+.venv/
+
+# --- OS / editor files ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# --- Environment files (secrets) ---
+.env
 OPENAI_API_KEY
