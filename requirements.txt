@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+python-multipart
+jinja2
+# add other packages your project needs (e.g., pydantic, requests, sqlalchemy)
