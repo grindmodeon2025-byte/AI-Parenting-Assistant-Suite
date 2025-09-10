@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Parenting Planner — Bond & Grow</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    :root{
+      --soft-bg: #f6fbfa;
+      --accent: #6ecbbd;
+      --muted: #7b8a86;
+      --card: #ffffff;
+    }
+    body{
+      background: linear-gradient(180deg, var(--soft-bg), #ffffff 60%);
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color:#234;
+      padding:28px;
+    }
+    .hero {
+      display:flex;
+      gap:18px;
+      align-items:center;
+      margin-bottom:18px;
+    }
+    .hero .logo {
+      width:68px;height:68px;border-radius:18px;
+      background: linear-gradient(135deg, #8fe1d2, #5cc7b4);
+      display:flex;align-items:center;justify-content:center;color:white;font-weight:700;
+      box-shadow: 0 6px 20px rgba(92,199,180,0.18);
+      font-size:26px;
+    }
+    .card-soft{
+      background:var(--card);
+      border: none;
+      border-radius:16px;
+      box-shadow: 0 8px 28px rgba(20,40,40,0.06);
+    }
+    .field-hint { font-size:0.85rem; color:var(--muted); }
+    .section-title { color:#0f4d47; font-weight:600; }
+    .activity-pill { display:inline-block;padding:6px 10px;border-radius:999px;background:#f1fffb;margin:6px 6px 0 0;border:1px solid #e6f7f3; }
+    .generated-area { transition: all 220ms ease; transform-origin: top center; }
+    .fade-in { animation: appear 260ms ease both; }
+    @keyframes appear { from { opacity:0; transform: translateY(6px) scale(.995) } to { opacity:1; transform:none } }
+  </style>
+</head>
+<body class="container">
+
+  <div class="hero mb-4">
+    <div class="logo">PG</div>
+    <div>
+      <h2 class="mb-0">Bond & Grow — Activity Planner</h2>
+      <div class="field-hint">Create daily activities to strengthen parent-child bonds (fresh suggestions each time).</div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="p-4 card-soft">
+        <h5 class="section-title">Planner Input</h5>
+        <form id="plannerForm" class="mt-3">
+          <div class="mb-3">
+            <label class="form-label">Parent's Name <small class="text-muted">(who's using)</small></label>
+            <input type="text" id="parent_name" class="form-control" placeholder="e.g., Asha / Rohit" required>
+            <div class="field-hint">Example: "Asha (Mother)".</div>
+          </div>
+
+          <div class="row">
+            <div class="col-7 mb-3">
+              <label class="form-label">Child's Name</label>
+              <input type="text" id="child_name" class="form-control" placeholder="e.g., Aarav" required>
+              <div class="field-hint">Example: "Aarav".</div>
+            </div>
+            <div class="col-5 mb-3">
+              <label class="form-label">Gender (optional)</label>
+              <select id="child_gender" class="form-select">
+                <option value="">Prefer not to say</option>
+                <option>Boy</option>
+                <option>Girl</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label class="form-label">Age — Years</label>
+              <input type="number" id="age_years" class="form-control" min="0" placeholder="e.g., 1" required>
+              <div class="field-hint">Enter full years (0 if under 1 year).</div>
+            </div>
+            <div class="col-6 mb-3">
+              <label class="form-label">Age — Months</label>
+              <input type="number" id="age_months" class="form-control" min="0" max="11" placeholder="e.g., 3">
+              <div class="field-hint">Enter months (0–11). Example: 1 yr 3 mo → Years:1 Months:3</div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Parent Availability (daily)</label>
+            <input type="text" id="availability" class="form-control" placeholder="e.g., 7–8am (quick activities), 6–7pm (long play)">
+            <div class="field-hint">Helpful to tailor activity lengths.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Family Goals</label>
+            <input type="text" id="family_goals" class="form-control" placeholder="e.g., improve bedtime routine, language development">
+            <div class="field-hint">Example: "Help child sleep better", "Build vocabulary".</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Special Needs / Notes (optional)</label>
+            <textarea id="special_needs" class="form-control" placeholder="e.g., allergies, sensory preferences, shy with strangers" rows="2"></textarea>
+          </div>
+
+          <div class="mb-3 form-check">
+            <input class="form-check-input" type="checkbox" id="include_father" checked>
+            <label class="form-check-label" for="include_father">Include father-specific activities</label>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success"><i class="fa-solid fa-magic"></i> Generate Planner</button>
+            <button type="button" id="resetBtn" class="btn btn-outline-secondary">Clear</button>
+            <a href="/" class="btn btn-outline-primary ms-auto"><i class="fa-solid fa-house"></i> Back to Home</a>
+          </div>
+        </form>
+      </div>
+
+      <div class="mt-3 text-muted small">
+        Tip: Submit multiple times for fresh, new activity combinations (the planner randomizes each generation).
+      </div>
+
+    </div>
+
+    <div class="col-lg-7">
+      <div id="resultArea" class="p-4 card-soft generated-area" style="min-height:260px;">
+        <div id="welcome" class="text-center py-5">
+          <img src="https://cdn.jsdelivr.net/gh/tabler/tabler-icons/icons/activity.svg" alt="" style="width:56px;opacity:.12">
+          <h5 class="mt-3">Your personalized activity plan will appear here</h5>
+          <div class="field-hint mt-2">Includes activity descriptions, suggested time, and materials. Click "Export to PDF" to save.</div>
+        </div>
+      </div>
+
+      <!-- buttons (appear after generation) -->
+      <div class="mt-3 d-flex gap-2" id="actionRow" style="display:none;">
+        <button id="exportPdf" class="btn btn-outline-success"><i class="fa-solid fa-file-pdf"></i> Export to PDF</button>
+        <button id="regenerate" class="btn btn-outline-primary"><i class="fa-solid fa-rotate"></i> Generate New</button>
+        <button id="printBtn" class="btn btn-secondary"><i class="fa-solid fa-print"></i> Print</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS libs: bootstrap, html2pdf -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <script>
+    // Activity banks by developmental stage
+    // Each activity has: title, description template, duration, materials
+    const banks = {
+      "0-6m": {
+        mother: [
+          { title:"Skin-to-skin cuddle", desc:"Hold {child} close for 10–15 minutes; hum a lullaby and gently stroke their back to calm and bond.", duration:"10–15 min", materials:"Soft blanket" },
+          { title:"Visual tracking", desc:"Move a high-contrast toy slowly side-to-side to encourage eye tracking. Talk to them about the toy.", duration:"5–8 min", materials:"Black & white card or high-contrast toy" }
+        ],
+        father: [
+          { title:"Gentle tummy time", desc:"Place {child} on a tummy on your chest for short supervised sessions, singing softly.", duration:"5–10 min", materials:"Towel for support" },
+          { title:"Rhythmic rocking", desc:"Rock gently while reciting a short rhyme; helps with recognition of father's voice.", duration:"10 min", materials:"Comfortable chair" }
+        ],
+        joint: [
+          { title:"Family song time", desc:"Both parents sing a short, simple song while facing the baby; repeat daily to build familiarity.", duration:"5–10 min", materials:"None" }
+        ]
+      },
+      "7-12m": {
+        mother: [
+          { title:"Object permanence peekaboo", desc:"Play peekaboo with a small cloth and encourage them to find the hidden toy.", duration:"5–10 min", materials:"Small cloth, toy" },
+          { title:"Sensory tray", desc:"Let them explore a tray of safe textures (fabric, sponge). Describe each texture as they touch it.", duration:"8–12 min", materials:"Tray, safe textured items" }
+        ],
+        father: [
+          { title:"Ball roll", desc:"Sit with legs open and roll a soft ball back and forth to develop turn-taking.", duration:"10 min", materials:"Soft ball" },
+          { title:"Mirror faces", desc:"Sit in front of a mirror and make faces together; great for social learning.", duration:"5–8 min", materials:"Mirror" }
+        ],
+        joint: [
+          { title:"Story with puppets", desc:"Short puppet stories where each parent voices a character; encourages listening and attention.", duration:"10 min", materials:"Small puppets or socks" }
+        ]
+      },
+      "1-2y": {
+        mother: [
+          { title:"Naming game", desc:"Point to objects during play and name them — expand vocabulary with short sentences.", duration:"10–15 min", materials:"Everyday toys" },
+          { title:"Simple art", desc:"Finger painting on a big paper together; talk about colors and feelings.", duration:"12–20 min", materials:"Washable paints, paper" }
+        ],
+        father: [
+          { title:"Obstacle course", desc:"Create a soft indoor obstacle course and guide them through it with encouragement.", duration:"15–20 min", materials:"Cushions, boxes" },
+          { title:"Counting hop", desc:"Count steps or hops together to build numbers and rhythm.", duration:"8–12 min", materials:"None" }
+        ],
+        joint: [
+          { title:"Cooking helper", desc:"Let the child help wash veggies or stir (supervised). Talk through steps to build routine.", duration:"15–20 min", materials:"Safe kitchen setup" }
+        ]
+      },
+      "3-5y": {
+        mother: [
+          { title:"Pretend play", desc:"Create a small pretend scenario (shop, kitchen) and role-play together to build creativity.", duration:"20–30 min", materials:"Toy props" },
+          { title:"Story extension", desc:"Read a story then ask the child to change one thing and act it out.", duration:"15–25 min", materials:"Books" }
+        ],
+        father: [
+          { title:"Nature walk explorer", desc:"Go on a short walk, collect leaves/rocks, and talk about what you find.", duration:"20–30 min", materials:"Small bag" },
+          { title:"Simple science", desc:"Do a quick mixing experiment (vinegar + baking soda in small amounts) with safety supervision.", duration:"15 min", materials:"Household items" }
+        ],
+        joint: [
+          { title:"Building challenge", desc:"Work together to build a tower with blocks and take turns adding pieces.", duration:"20–30 min", materials:"Blocks" }
+        ]
+      }
+    };
+
+    // Helper: choose random element(s)
+    function chooseRandom(arr, n=1){
+      const copy = arr.slice();
+      const out = [];
+      for(let i=0;i<n && copy.length;i++){
+        const idx = Math.floor(Math.random()*copy.length);
+        out.push(copy.splice(idx,1)[0]);
+      }
+      return out;
+    }
+
+    // Determine stage key from years+months
+    function stageKey(years, months){
+      const totalMonths = (Number(years)||0)*12 + (Number(months)||0);
+      if (totalMonths <= 6) return "0-6m";
+      if (totalMonths <= 12) return "7-12m";
+      if (totalMonths <= 24) return "1-2y";
+      return "3-5y";
+    }
+
+    // Format age string
+    function ageString(y,m){
+      y = Number(y)||0; m = Number(m)||0;
+      if(y===0 && m===0) return "0 months";
+      let parts=[];
+      if(y>0) parts.push(y + (y===1?" year":" years"));
+      if(m>0) parts.push(m + (m===1?" month":" months"));
+      return parts.join(" ");
+    }
+
+    // Generate planner HTML
+    function generatePlanner(data){
+      const { parent_name, child_name, child_gender, stage, agestr, includeFather, goals, notes, availability } = data;
+      // pick activities
+      const bank = banks[stage];
+      // choose 2 activities each where available
+      const momActs = chooseRandom(bank.mother, 2);
+      const dadActs = includeFather ? chooseRandom(bank.father, 2) : [];
+      const jointActs = chooseRandom(bank.joint, 2);
+
+      // timestamp
+      const ts = new Date().toLocaleString();
+
+      // compose HTML
+      const html = `
+        <div class="fade-in">
+          <div class="d-flex align-items-start gap-3 mb-3">
+            <div style="width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,#e9fbf7,#dff6f1);display:flex;align-items:center;justify-content:center">
+              <i class="fa-solid fa-hand-holding-child" style="font-size:26px;color:#0b6b60"></i>
+            </div>
+            <div>
+              <div class="d-flex align-items-baseline gap-2">
+                <h4 class="mb-0">${child_name || 'Your child'}</h4>
+                <div class="field-hint"> • ${agestr} • ${child_gender||'—'}</div>
+              </div>
+              <div class="text-muted small">Plan generated for: <strong>${parent_name||'Parent'}</strong> • ${ts}</div>
+            </div>
+          </div>
+
+          <div class="mb-3 p-3 card-soft">
+            <div class="d-flex justify-content-between">
+              <div>
+                <div class="section-title">Daily Focus</div>
+                <div class="field-hint">${goals || "Play, talk and build routine"}</div>
+              </div>
+              <div style="text-align:right">
+                <div class="section-title">Availability</div>
+                <div class="field-hint">${availability || "Flexible windows"}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row gx-3 gy-3">
+            <div class="col-md-6">
+              <div class="p-3 card-soft">
+                <div class="section-title">Mother — Child Activities</div>
+                ${momActs.map(a => `
+                  <div class="mt-2">
+                    <div style="font-weight:600">${a.title}</div>
+                    <div class="field-hint small mb-1">${a.duration} • Materials: ${a.materials}</div>
+                    <div>${a.desc.replace('{child}', child_name || 'the child')}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="p-3 card-soft">
+                <div class="section-title">Father — Child Activities</div>
+                ${dadActs.length? dadActs.map(a => `
+                  <div class="mt-2">
+                    <div style="font-weight:600">${a.title}</div>
+                    <div class="field-hint small mb-1">${a.duration} • Materials: ${a.materials}</div>
+                    <div>${a.desc.replace('{child}', child_name || 'the child')}</div>
+                  </div>
+                `).join('') : `<div class="field-hint">Father activities not included (un-check the option to hide).</div>`}
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="p-3 card-soft">
+                <div class="section-title">Joint Activities (Both parents)</div>
+                ${jointActs.map(a => `
+                  <div class="mt-2">
+                    <div style="font-weight:600">${a.title}</div>
+                    <div class="field-hint small mb-1">${a.duration} • Materials: ${a.materials}</div>
+                    <div>${a.desc.replace('{child}', child_name || 'the child')}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="mt-2 p-3 card-soft">
+                <div class="d-flex justify-content-between">
+                  <div class="section-title">Quick Tips</div>
+                </div>
+                <ul>
+                  <li>Keep sessions short and playful — follow your child's cues.</li>
+                  <li>Use routines: same song or activity each day to build predictability.</li>
+                  <li>Celebrate attempts: praise effort not only success.</li>
+                </ul>
+                <div class="field-hint">Notes: ${notes || '—'}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      return html;
+    }
+
+    // Event handlers
+    const form = document.getElementById('plannerForm');
+    const resultArea = document.getElementById('resultArea');
+    const actionRow = document.getElementById('actionRow');
+
+    function collectInputs(){
+      const parent_name = document.getElementById('parent_name').value.trim();
+      const child_name = document.getElementById('child_name').value.trim();
+      const child_gender = document.getElementById('child_gender').value;
+      const age_years = document.getElementById('age_years').value;
+      const age_months = document.getElementById('age_months').value;
+      const availability = document.getElementById('availability').value.trim();
+      const family_goals = document.getElementById('family_goals').value.trim();
+      const special_needs = document.getElementById('special_needs').value.trim();
+      const includeFather = document.getElementById('include_father').checked;
+      const stage = stageKey(age_years, age_months);
+      const agestr = ageString(age_years, age_months);
+      return { parent_name, child_name, child_gender, age_years, age_months, availability, goals:family_goals, notes:special_needs, includeFather, stage, agestr };
+    }
+
+    // Generate and display
+    function doGenerate(){
+      const data = collectInputs();
+      // simple validation
+      if(!data.parent_name || !data.child_name || (data.age_years==="" && data.age_months==="")){
+        alert("Please enter Parent name, Child name and child's age.");
+        return;
+      }
+      // create html
+      resultArea.innerHTML = generatePlanner(data);
+      actionRow.style.display = 'flex';
+      // show export/print handlers (bound once)
+      document.getElementById('exportPdf').onclick = () => exportPDF(data.child_name || 'planner');
+      document.getElementById('printBtn').onclick = () => window.print();
+      document.getElementById('regenerate').onclick = () => doGenerate(); // regenerate fresh
+    }
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      doGenerate();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      form.reset();
+      resultArea.innerHTML = document.getElementById('welcome').outerHTML || '<div class="p-4">Your personalized activity plan will appear here.</div>';
+      actionRow.style.display = 'none';
+    });
+
+    // Export PDF using html2pdf
+    function exportPDF(filenameBase='planner'){
+      // create a clean copy for PDF (avoid buttons)
+      const element = resultArea.cloneNode(true);
+      // remove any interactive elements inside clone (if any)
+      element.querySelectorAll('button,a,input').forEach(n => n.remove && n.remove());
+      // small style tweak
+      element.style.padding = '18px';
+      const opt = {
+        margin:       12,
+        filename:     `${filenameBase.replace(/\s+/g,'_')}_activity_plan.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+
+    // Allow pressing Enter in inputs to submit
+    form.querySelectorAll('input').forEach(inp=>{
+      inp.addEventListener('keydown', (e)=> { if(e.key==='Enter'){ e.preventDefault(); doGenerate(); }});
+    });
+  </script>
+</body>
+</html>
